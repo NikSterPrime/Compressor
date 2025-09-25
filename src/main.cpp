@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "huffman.h"
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -25,7 +26,7 @@ int main(int argc, char* argv[])
         string outputFile = argv[3];
 
 
-        cout<<"Compressing "<<inputFile<<" to "<<outputFile<<"...Coming soon!\n";
+        compressHuffman(inputFile,outputFile);
     }
 
     else if(command == "decompress")
@@ -39,7 +40,7 @@ int main(int argc, char* argv[])
         string outputFile = argv[3];
 
 
-        cout<<"Decompressing "<<inputFile<<" to "<<outputFile<<"...Coming soon!\n";
+        decompressHuffman(inputFile,outputFile);
     }
 
     else

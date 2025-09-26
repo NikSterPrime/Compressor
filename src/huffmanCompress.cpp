@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
-#include <huffman.h>
-#include <bits/stdc++.h>
+#include <huffmanCompress.h>
+
 using namespace std;
 
 class Node {

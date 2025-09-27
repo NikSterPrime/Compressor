@@ -1,23 +1,17 @@
 #include <iostream>
 #include <vector>
-#include <huffmanCompress.h>
-
+#include "../include/huffmanCompress.h"
+#include <unordered_map>
+#include "../include/utils.h"
 using namespace std;
 
-class Node {
-	public:
-		int data;
-		Node *left,*right;
-		Node(int x)
-		{
-			data = x;
-			left = nullptr;
-			right = nullptr;
-		}
-};
-
-void compressHuffman(const string& inputFile,const string& outputFile)
+void compress(const string& inputFile,const string& outputFile)
 {
-		
+
+		auto frequencyTable = calculateFrequencies(inputFile);
+		for(const auto& i:frequencyTable)
+		{
+			cout<<i.first<<" "<<i.second;
+		}
 }
 

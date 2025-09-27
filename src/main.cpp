@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "huffmanCompress.h"
+#include "../include/huffmanCompress.h"
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
         string outputFile = argv[3];
 
 
-        compressHuffman(inputFile,outputFile);
+        compress(inputFile,outputFile);
     }
 
     else if(command == "decompress")

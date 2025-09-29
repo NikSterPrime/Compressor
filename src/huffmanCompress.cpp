@@ -1,4 +1,5 @@
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -6,24 +7,85 @@
 #include "../include/utils.h"
 using namespace std;
 
+class Node {
+	public:
+		int data;
+		Node *left, *right;
+		Node(int x)
+		{
+			data = x;
+			left = nullptr;
+			right = nullptr;
+		}
+};
+
+class Compare{
+	public:
+		bool operator()(Node* a,Node* b){
+			return a->data > b->data;
+		}
+};
+
+void preorder(Node* root, vector<string> &ans,string curr)
+{
+	if(root == nullptr) return;
+	
+	if(root->left == nullptr && root->right== nullptr)
+	{
+		ans.push_back(curr);
+		return;
+	}
+	preorder(root->left,ans,curr+"0");
+	preorder(root->right,ans,curr+"1");
+}
+
+vector<string> huffmanCode(string contents,unordered_map<char, int> freq)
+{
+	int n = contents.length();
+	priority_queue<Node*, vector<Node*>,Compare> pq;
+
+	for(auto &i:freq)
+	{
+		Node* tmp = new Node(i.second);
+		pq.push(tmp);
+	}
+
+	while(pq.size()>=2)
+	{
+		Node* l = pq.top();
+		pq.pop();
+
+		Node* r = pq.top();
+		pq.pop();
+
+		Node* newNode = new Node(l->data+r->data);
+		newNode->left = l;
+		newNode->right = r;
+		pq.push(newNode);
+	}
+	Node* root = pq.top();
+	vector<string> ans;
+	preorder(root,ans,"");
+	return ans;
+}
+
 void compress(const string& inFile,const string& outFile)
 {
 		ifstream inputFile(inFile);
-		string line_content;
-		string file_contents;
 		if(!inputFile.is_open())
 		{
-			cerr<<"Error Opening the file !"<<endl;
-			exit(0);
+			cerr<<"Error opening the file:"<<inFile<<endl;
+			return;
 		}
-		while(getline(inputFile,line_content))
-		{
-			file_contents+=line_content;
-		}
+		string line_content;
+		std::stringstream buffer;
+		buffer<<inputFile.rdbuf();
+		string file_contents = buffer.str();
 		auto frequencyTable = calculateFrequencies(file_contents);
-		for(const auto& i:frequencyTable)
+		vector<string> result = huffmanCode(file_contents,frequencyTable);
+		for(int i=0;i<result.size();i++)
 		{
-			cout<<i.first<<" "<<i.second;
-		}
+			cout<<result[i]<<" ";
+		}		
 }
 

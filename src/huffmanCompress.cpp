@@ -82,10 +82,19 @@ void compress(const string& inFile,const string& outFile)
 		buffer<<inputFile.rdbuf();
 		string file_contents = buffer.str();
 		auto frequencyTable = calculateFrequencies(file_contents);
-		vector<string> result = huffmanCode(file_contents,frequencyTable);
-		for(int i=0;i<result.size();i++)
+		vector<string> result = huffmanCode(file_contents,frequencyTable);	
+
+		ofstream outputFile(outFile);
+		if(outputFile.is_open())
 		{
-			cout<<result[i]<<" ";
-		}		
+			for(int i=0;i<result.size();i++)
+			{
+				outputFile<<result[i];
+			}
+			outputFile.close();
+		}
+		else{
+			cout<<"Error in creating/writing the file.\n";
+		}
 }
 

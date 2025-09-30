@@ -94,7 +94,7 @@ void compress(const string& inFile,const string& outFile)
 			outputFile.close();
 		}
 		else{
-			cout<<"Error in creating/writing the file.\n";
+			cout<<"Error in creating/writing the file\n";
 		}
 }
 

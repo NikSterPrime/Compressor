@@ -3,6 +3,18 @@
 #include "../include/huffmanCompress.h"
 using namespace std;
 
+class Node {
+	public:
+		int data;
+		Node *left, *right;
+		Node(int x)
+		{
+			data = x;
+			left = nullptr;
+			right = nullptr;
+		}
+};
+
 int main(int argc, char* argv[])
 {
     if(argc < 2)

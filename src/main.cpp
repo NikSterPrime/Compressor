@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "../include/huffmanCompress.h"
+#include "../include/huffmanDecompress.h"
 using namespace std;
 
 class Node {
@@ -50,7 +51,8 @@ int main(int argc, char* argv[])
         }
         string inputFile = argv[2];
         string outputFile = argv[3];
-
+        
+        decompress(inputFile,outputFile);
 
     }
 

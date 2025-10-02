@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <unordered_map>
+#include <map>
 
 // Count frequency of each character in a string
-std::unordered_map<char, int> calculateFrequencies(const std::string& text);
+std::map<char, int> calculateFrequencies(const std::string& text);

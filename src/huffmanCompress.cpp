@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <map>
 #include <unordered_map>
 #include "../include/huffmanCompress.h"
 #include "../include/utils.h"
@@ -10,9 +11,11 @@ using namespace std;
 class Node {
 	public:
 		int data;
+		char c;
 		Node *left, *right;
-		Node(int x)
+		Node(char ch,int x)
 		{
+			c = ch;
 			data = x;
 			left = nullptr;
 			right = nullptr;
@@ -26,27 +29,27 @@ class Compare{
 		}
 };
 
-void preorder(Node* root, vector<string> &ans,string curr)
+void preorder(Node* root, map<char,string> &ans,string curr)
 {
 	if(root == nullptr) return;
 	
 	if(root->left == nullptr && root->right== nullptr)
 	{
-		ans.push_back(curr);
+		ans[root->c] = curr;
 		return;
 	}
 	preorder(root->left,ans,curr+"0");
 	preorder(root->right,ans,curr+"1");
 }
 
-vector<string> huffmanCode(string contents,unordered_map<char, int> freq)
+map<char,string> huffmanCode(string contents,map<char, int> freq)
 {
 	int n = contents.length();
 	priority_queue<Node*, vector<Node*>,Compare> pq;
 
 	for(auto &i:freq)
 	{
-		Node* tmp = new Node(i.second);
+		Node* tmp = new Node(i.first,i.second);
 		pq.push(tmp);
 	}
 
@@ -58,13 +61,13 @@ vector<string> huffmanCode(string contents,unordered_map<char, int> freq)
 		Node* r = pq.top();
 		pq.pop();
 
-		Node* newNode = new Node(l->data+r->data);
+		Node* newNode = new Node('\0',l->data+r->data);
 		newNode->left = l;
 		newNode->right = r;
 		pq.push(newNode);
 	}
 	Node* root = pq.top();
-	vector<string> ans;
+	map<char,string> ans;
 	preorder(root,ans,"");
 	return ans;
 }
@@ -82,19 +85,29 @@ void compress(const string& inFile,const string& outFile)
 		buffer<<inputFile.rdbuf();
 		string file_contents = buffer.str();
 		auto frequencyTable = calculateFrequencies(file_contents);
-		vector<string> result = huffmanCode(file_contents,frequencyTable);	
+		map<char,string> result = huffmanCode(file_contents,frequencyTable);	
 
 		ofstream outputFile(outFile);
 		if(outputFile.is_open())
 		{
-			for(int i=0;i<result.size();i++)
+			for(auto &p:result)
 			{
-				outputFile<<result[i];
+				outputFile<<p.second;
 			}
 			outputFile.close();
 		}
 		else{
 			cout<<"Error in creating/writing the file\n";
 		}
-}
 
+		ofstream opfile(outFile+".map");
+		if(opfile.is_open())
+		{
+			for (auto &p : result) {
+        		if (p.first == '\n') opfile<< "\\n"; // special case for newline
+        		else if (p.first == ' ') opfile << "[space]";
+        		else opfile << p.first;
+        		opfile << " " << p.second << "\n";
+			}
+		}
+}

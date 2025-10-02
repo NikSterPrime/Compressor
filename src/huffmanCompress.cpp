@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <queue>
 #include "../include/huffmanCompress.h"
 #include "../include/utils.h"
 using namespace std;
@@ -80,26 +81,51 @@ void compress(const string& inFile,const string& outFile)
 			cerr<<"Error opening the file:"<<inFile<<endl;
 			return;
 		}
-		string line_content;
 		std::stringstream buffer;
 		buffer<<inputFile.rdbuf();
 		string file_contents = buffer.str();
+		inputFile.close();
+		
 		auto frequencyTable = calculateFrequencies(file_contents);
 		map<char,string> result = huffmanCode(file_contents,frequencyTable);	
 
-		ofstream outputFile(outFile);
+		// Build the compressed bit string
+		string compressedBits = "";
+		for(char c : file_contents) {
+			compressedBits += result[c];
+		}
+		
+		cout << "Original size: " << file_contents.length() << " bytes" << endl;
+		cout << "Compressed bits: " << compressedBits.length() << " bits" << endl;
+		
+		// Pad the bit string to make it divisible by 8
+		while(compressedBits.length() % 8 != 0) {
+			compressedBits += "0";
+		}
+		
+		// Convert bit string to bytes and write to file
+		ofstream outputFile(outFile, ios::binary);
 		if(outputFile.is_open())
 		{
-			for(auto &p:result)
-			{
-				outputFile<<p.second;
+			for(size_t i = 0; i < compressedBits.length(); i += 8) {
+				string byte = compressedBits.substr(i, 8);
+				char byteValue = 0;
+				for(int j = 0; j < 8; j++) {
+					if(byte[j] == '1') {
+						byteValue |= (1 << (7 - j));
+					}
+				}
+				outputFile.write(&byteValue, 1);
 			}
 			outputFile.close();
+			cout << "Compressed to " << compressedBits.length() / 8 << " bytes" << endl;
 		}
 		else{
 			cout<<"Error in creating/writing the file\n";
+			return;
 		}
 
+		// Write map file with consistent format
 		ofstream opfile(outFile+".map");
 		if(opfile.is_open())
 		{
@@ -109,5 +135,10 @@ void compress(const string& inFile,const string& outFile)
         		else opfile << p.first;
         		opfile << " " << p.second << "\n";
 			}
+			opfile.close();
+			cout << "Map file created with " << result.size() << " entries" << endl;
+		}
+		else {
+			cout << "Error creating map file\n";
 		}
 }
